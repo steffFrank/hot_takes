@@ -65,8 +65,10 @@ const comparePassword = async (password, hash, bcrypt) => {
 }
 
 /**
- * 
- * @returns { String } token
+ * Generate a token containing userId
+ * @param {Object} jwt 
+ * @param {String} userId 
+ * @returns 
  */
 const generateToken = (jwt, userId) => {
     return jwt.sign(
@@ -76,10 +78,50 @@ const generateToken = (jwt, userId) => {
     );
 }
 
+/**
+ * Normalize val
+ * @param {String} val 
+ * @returns {String | Number | boolean}
+ */
+const normalizePort = val => {
+    const port = parseInt(val, 10);
+  
+    if (isNaN(port)) {
+      return val;
+    }
+    if (port >= 0) {
+      return port;
+    }
+    return false;
+  };
+
+  // Handle error in server
+  const errorHandler = error => {
+    if (error.syscall !== 'listen') {
+      throw error;
+    }
+    const address = server.address();
+    const bind = typeof address === 'string' ? 'pipe ' + address : 'port: ' + port;
+    switch (error.code) {
+      case 'EACCES':
+        console.error(bind + ' requires elevated privileges.');
+        process.exit(1);
+      case 'EADDRINUSE':
+        console.error(bind + ' is already in use.');
+        process.exit(1);
+      default:
+        throw error;
+    }
+  };
+
 module.exports = ({
     saveUserInDb, 
     getHashedPassword, 
     comparePassword, 
     checkUser, 
-    generateToken
+    generateToken,
+    normalizePort,
+    errorHandler
 });
+
+

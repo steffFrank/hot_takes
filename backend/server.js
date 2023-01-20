@@ -1,28 +1,20 @@
-const express = require("express");
-const app = express();
-const cors = require("cors");
-const mongoose = require("mongoose");
-const userRouter = require("./routers/user.router");
-require("dotenv").config();
-mongoose.set("strictQuery", false);
+const http = require('http');
+const app = require("./app");
+const {normalizePort, errorHandler} = require("./utils");
 
-app.use(express.json());
-app.use(cors());
-
-// Connect to the database mongoDb
-try {
-    mongoose.connect(process.env.MONGODB_CONNECTION);
-    console.log("connected to mongoose");
-} catch(error) {
-    console.error(error);
-}
-
-app.use("/api/auth", userRouter);
+// Normalize the port
 
 
+const port = normalizePort(process.env.PORT || '3000');
+app.set('port', port);
 
+const server = http.createServer(app);
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`listening on port ${PORT}`);
+server.on('error', errorHandler);
+server.on('listening', () => {
+  const address = server.address();
+  const bind = typeof address === 'string' ? 'pipe ' + address : 'port ' + port;
+  console.log('Listening on ' + bind);
 });
+
+server.listen(port);
