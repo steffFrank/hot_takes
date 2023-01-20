@@ -11,22 +11,20 @@ registerUser = async (req, res, saltRounds, User, bcrypt) => {
     } catch(error) {
         res.status(401).json({message: error});
     }
-
 }
 
 // Log user in with token
-logUserIn = async (req, res, User, jwt, bcrypt) => {
+logUserIn = async (req, res, User, jwt, bcrypt, randomSecret) => {
     const { email, password } = req.body;
     try {
         const user = await checkUser(email, User);
         await comparePassword(password, user.password, bcrypt);
-        const randomToken = generateToken(jwt, user._id);
+        const randomToken = generateToken(jwt, user._id, randomSecret);
         res.status(200).json({userId: user._id, token: randomToken});
     } catch(error) {
         console.log(error);
-        res.status(404).json("Bad request");
+        res.status(500).json({error});
     }
-    res.status(404).json("Bad request");
 }
 
 module.exports = ({logUserIn, registerUser});

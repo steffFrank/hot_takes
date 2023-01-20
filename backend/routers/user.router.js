@@ -11,7 +11,7 @@ userRouter.post("/signup", (req, res) => {
 });
 
 userRouter.post("/login", (req, res) => {
-    user.logUserIn(req, res, User, jwt, bcrypt);
+    user.logUserIn(req, res, User, jwt, bcrypt, process.env.RANDOM_SECRET);
 });
 
 module.exports = userRouter;

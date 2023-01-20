@@ -70,10 +70,10 @@ const comparePassword = async (password, hash, bcrypt) => {
  * @param {String} userId 
  * @returns 
  */
-const generateToken = (jwt, userId) => {
+const generateToken = (jwt, userId, randomSecret) => {
     return jwt.sign(
         { userId: userId },
-        "RANDOM_TOKEN_SECRET",
+        randomSecret,
         { expiresIn: "24h" }
     );
 }
