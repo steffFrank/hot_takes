@@ -2,10 +2,9 @@ const Sauce = require("../models/sauce.model");
 
 const addSauce = async (req, res) => {
     const sauceObject = JSON.parse(req.body.sauce);
-    
+
     const sauce = new Sauce({
         ...sauceObject,
-        userId: req.auth.userId,
         likes: 0,
         dislikes: 0,
         usersLiked: [],
@@ -30,4 +29,22 @@ const getAllSauces = async (req, res) => {
     }
 };
 
-module.exports = ({addSauce, getAllSauces});
+const getSauce = async (req, res) => {
+
+}
+
+const updateSauce = async (req, res) => {
+
+}
+
+const updateLikes = async (req, res) => [
+
+]
+
+module.exports = ({
+     addSauce,
+     getAllSauces,
+     getSauce,
+     updateSauce,
+     updateLikes
+    });
