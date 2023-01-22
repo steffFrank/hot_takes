@@ -1,4 +1,3 @@
-const { findOne } = require("../models/sauce.model");
 const Sauce = require("../models/sauce.model");
 const fs = require("fs").promises;
 
@@ -43,13 +42,22 @@ const getSauce = async (req, res) => {
 
 const updateSauce = async (req, res) => {
     const { id } = req.params;
-    const sauceObject = req.file ? 
-    {
-        ...JSON.parse(req.body.sauce), 
-        imageUrl:`${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`
-    } : {...req.body};
+    let sauceObject = {};
     try {
         const sauce = await Sauce.findOne({"_id": id});
+
+        if (req.file) {
+            sauceObject = {
+                ...JSON.parse(req.body.sauce), 
+                imageUrl:`${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`
+            }
+            const filename = sauce.imageUrl.split("uploads/")[1];
+            await fs.unlink(`uploads/${filename}`);
+        } else {
+            sauceObject = {...req.body};
+        }
+
+    
         if (sauce.userId !== req.auth.userId) {
             res.status(403).json({message: "Unauthorized request"});
         } else {
