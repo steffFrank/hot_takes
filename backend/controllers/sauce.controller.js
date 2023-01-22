@@ -14,7 +14,7 @@ const addSauce = async (req, res) => {
 
     try {
         await sauce.save();
-        res.status(201).json({message: "sauce registered with sucess!"});
+        res.status(201).json({message: "sauce registered with success!"});
     } catch(error) {
         res.status(400).json({ error });
     }
@@ -30,7 +30,14 @@ const getAllSauces = async (req, res) => {
 };
 
 const getSauce = async (req, res) => {
-
+    const {id} = req.params;
+    try {
+        const sauce = await Sauce.findById(id);
+        res.status(200).json(sauce);
+    }catch(error) {
+        console.error(error);
+        res.status(404).json({error});
+    }
 }
 
 const updateSauce = async (req, res) => {
@@ -47,4 +54,4 @@ module.exports = ({
      getSauce,
      updateSauce,
      updateLikes
-    });
+});
