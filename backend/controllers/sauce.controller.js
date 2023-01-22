@@ -1,4 +1,5 @@
 const Sauce = require("../models/sauce.model");
+const fs = require("fs").promises;
 
 const addSauce = async (req, res) => {
     const sauceObject = JSON.parse(req.body.sauce);
@@ -60,14 +61,34 @@ const updateSauce = async (req, res) => {
     }
 }
 
-const updateLikes = async (req, res) => [
+const deleteSauce = async (req, res) => {
+    const { id } = req.params;
+    try {
+        const sauce = await Sauce.findOne({"_id": id});
+        if (sauce.userId !== req.auth.userId) {
+            console.log(sauce.userId, req.auth.userId);
+            res.status(401).json({message: "Not Authorized!"});
+        } else {
+            const filename = sauce.imageUrl.split("/uploads/")[1];
+            await fs.unlink(`uploads/${filename}`);
+            await Sauce.deleteOne({"_id": id});
+            res.status(201).json({message: "Sauce deleted with success!"});
+        }
+    }catch(error) {
+        console.error(error);
+        res.status(401).json({error});
+    }
+}
 
-]
+const updateLikes = async (req, res) => {
+
+}
 
 module.exports = ({
      addSauce,
      getAllSauces,
      getSauce,
      updateSauce,
-     updateLikes
+     updateLikes,
+     deleteSauce
 });
