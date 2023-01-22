@@ -11,7 +11,7 @@ sauceRouter.get("/:id", auth, sauceController.getSauce);
 
 sauceRouter.post("/", auth, multer, sauceController.addSauce);
 
-sauceRouter.put("/:id", auth, sauceController.updateSauce);
+sauceRouter.put("/:id", auth, multer, sauceController.updateSauce);
 
 sauceRouter.post("/:id/like", auth, sauceController.updateLikes);
 
