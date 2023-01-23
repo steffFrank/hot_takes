@@ -1,5 +1,5 @@
 const Sauce = require("../models/sauce.model");
-const fs = require("fs").promises;
+const { removeImageFromPath, updateLikes } = require("../utils");
 
 const addSauce = async (req, res) => {
     const sauceObject = JSON.parse(req.body.sauce);
@@ -51,8 +51,7 @@ const updateSauce = async (req, res) => {
                 ...JSON.parse(req.body.sauce), 
                 imageUrl:`${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`
             }
-            const filename = sauce.imageUrl.split("uploads/")[1];
-            await fs.unlink(`uploads/${filename}`);
+            removeImageFromPath("uploads", sauce.imageUrl);
         } else {
             sauceObject = {...req.body};
         }
@@ -76,10 +75,9 @@ const deleteSauce = async (req, res) => {
         const sauce = await Sauce.findOne({"_id": id});
         if (sauce.userId !== req.auth.userId) {
             console.log(sauce.userId, req.auth.userId);
-            res.status(401).json({message: "Not Authorized!"});
+            res.status(403).json({message: "Unauthorized request"});
         } else {
-            const filename = sauce.imageUrl.split("/uploads/")[1];
-            await fs.unlink(`uploads/${filename}`);
+            removeImageFromPath("uploads", sauce.imageUrl);
             await Sauce.deleteOne({"_id": id});
             res.status(201).json({message: "Sauce deleted with success!"});
         }
@@ -93,47 +91,8 @@ const updateSauceLikes = async (req, res) => {
     const { id } = req.params;
     const { userId, like } = req.body;
     try {
-        const sauce = await Sauce.findOne({"_id": id});
-        if (like === 1) {
-            await Sauce.updateOne(
-                {"_id": id},
-                {
-                    $push: {usersLiked: userId},
-                    $inc: {likes: 1}
-                }
-            );
-            res.status(200).json({message: "Voted with success!"});
-        } else if (like === -1) {
-            await Sauce.updateOne(
-                {"_id": id},
-                {
-                    $push: {usersDisliked: userId},
-                    $inc: {dislikes: 1}
-                }
-            );
-            res.status(200).json({message: "Voted with success!"});
-        } else if (like === 0) {
-            if (sauce.usersLiked.includes(userId)) {
-                await Sauce.updateOne(
-                    {"_id": id},
-                    {
-                        $pull: {usersLiked: userId},
-                        $inc: {likes: -1}
-                    }
-                );
-                res.status(200).json({message: "Vote modify with success"});
-            }
-            if (sauce.usersDisliked.includes(userId)) {
-                await Sauce.updateOne(
-                    { "_id":id },
-                    {
-                        $pull: {usersDisliked: userId},
-                        $inc: {dislikes: -1}
-                    }
-                );
-                res.status(200).json({message: "Vote modify with success"});
-            }
-        }
+        const message = await updateLikes(Sauce, id, userId, like);
+        res.status(200).json({message: message});
     }catch(error) {
         console.error(error);
         res.status(404).json({ error });

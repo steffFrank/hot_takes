@@ -5,8 +5,8 @@ const mongoose = require("mongoose");
 mongoose.set("strictQuery", false);
 require("dotenv").config();
 const path = require("path");
-const sauceRouter = require("./routers/sauce.router");
 
+const sauceRouter = require("./routers/sauce.router");
 const userRouter = require("./routers/user.router");
 
 app.use(express.json());

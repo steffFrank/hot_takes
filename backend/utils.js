@@ -1,4 +1,5 @@
-// Utility funtions 
+// Utility functions 
+const fs = require("fs").promises;
 
 /**
  * 
@@ -44,7 +45,7 @@ const checkUser = async (email, User) => {
         const user = await User.findOne({email:email});
         return user;
     }catch(error) {
-        console.log(error);
+        console.error(error);
     }
 }
 
@@ -114,14 +115,73 @@ const normalizePort = val => {
     }
   };
 
+/**
+ * Update the right likes or dislikes value and modify the usersLiked or usersDisliked array accordingly
+ * @param {Object} Sauce 
+ * @param {String} id 
+ * @param {String} userId 
+ * @param {Number} like 
+ * @returns 
+ */
+const updateLikes = async (Sauce, id, userId, like) => {
+    const sauce = await Sauce.findById(id);
+    let field;
+    let action;
+    let message = "vote registered with success";
+    let value;
+    switch (like) {
+        case 1:
+            field = "usersLiked",
+            action = "$push";
+            value = "likes";
+            break;
+        case -1:
+            field = "usersDisliked";
+            action = "$push";
+            value = "dislikes";
+            like = 1;
+            break;
+        case 0:
+            action = "$pull";
+            like = -1;
+            field = sauce.usersLiked.includes(userId) ? "usersLiked" : "usersDisliked";
+            value = sauce.usersLiked.includes(userId) ? "likes" : "dislikes";
+            message = "vote modified with success";
+            break;
+        default: 
+            throw new Error("Wrong like value, expected 1, 0 or -1");
+    }
+    await Sauce.updateOne(
+        {"_id": id},
+        {
+            [action]: {[field]: userId},
+            $inc: {[value]: like}
+        }
+    );
+    return message;
+}
+
+/**
+ * Remove the image from the path
+ * @param {String} path - local path where to remove the image
+ * @param {String} imageUrl - image url from the database
+ */
+const removeImageFromPath = async (path, imageUrl) => {
+    // Retrieve the filename of the image
+    const filename = imageUrl.split(`/${path}/`)[1];
+    await fs.unlink(`${path}/${filename}`); // Remove the image
+}
+
 module.exports = ({
-    saveUserInDb, 
-    getHashedPassword, 
-    comparePassword, 
     checkUser, 
+    comparePassword, 
+    errorHandler,
     generateToken,
+    getHashedPassword, 
     normalizePort,
-    errorHandler
+    removeImageFromPath,
+    saveUserInDb,
+    updateLikes
 });
 
 
