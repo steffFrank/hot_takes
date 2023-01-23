@@ -3,19 +3,21 @@ const { removeImageFromPath, updateLikes } = require("../utils");
 
 const addSauce = async (req, res) => {
     const sauceObject = JSON.parse(req.body.sauce);
-    const sauce = new Sauce({
-        ...sauceObject,
-        likes: 0,
-        dislikes: 0,
-        usersLiked: [],
-        usersDisliked: [],
-        imageUrl:`${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`
-    });
-
+    const path = "uploads";
+    const imageUrl = `${req.protocol}://${req.get("host")}/${path}/${req.file.filename}`;
     try {
+        const sauce = new Sauce({
+            ...sauceObject,
+            likes: 0,
+            dislikes: 0,
+            usersLiked: [],
+            usersDisliked: [],
+            imageUrl: imageUrl
+        });
         await sauce.save();
         res.status(201).json({message: "sauce registered with success!"});
     } catch(error) {
+        removeImageFromPath(path, imageUrl);
         res.status(400).json({ error });
     }
 }

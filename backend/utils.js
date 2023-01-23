@@ -2,7 +2,7 @@
 const fs = require("fs").promises;
 
 /**
- * 
+ * Save a new created user in the database
  * @param { String } email 
  * @param { String } hashedPassword 
  * @param { Object - Database } User 
@@ -20,7 +20,7 @@ const saveUserInDb = async (email, hashedPassword, User) => {
 }
 
 /**
- * 
+ * Get the hashed password from the text one 
  * @param { String } password 
  * @param { Number } saltRounds 
  * @returns { Promise } of String
@@ -35,12 +35,12 @@ const getHashedPassword = async (password, saltRounds, bcrypt) => {
 }
 
 /**
- * 
+ * Get the user from the database
  * @param {String} email 
  * @param {Object - Database} User 
- * @returns 
+ * @returns { Object } user
  */
-const checkUser = async (email, User) => {
+const getUser = async (email, User) => {
     try {
         const user = await User.findOne({email:email});
         return user;
@@ -50,7 +50,7 @@ const checkUser = async (email, User) => {
 }
 
 /**
- * 
+ * Compare the text password and the hashed one
  * @param {String} password 
  * @param {String} hash 
  * @returns { Promise } of a Boolean
@@ -173,7 +173,7 @@ const removeImageFromPath = async (path, imageUrl) => {
 }
 
 module.exports = ({
-    checkUser, 
+    getUser, 
     comparePassword, 
     errorHandler,
     generateToken,

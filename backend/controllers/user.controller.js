@@ -1,5 +1,5 @@
 // User controller
-const {getHashedPassword, saveUserInDb, checkUser, comparePassword, generateToken} = require("../utils");
+const {getHashedPassword, saveUserInDb, getUser, comparePassword, generateToken} = require("../utils");
 
 // Register User
 registerUser = async (req, res, saltRounds, User, bcrypt) => {
@@ -17,7 +17,7 @@ registerUser = async (req, res, saltRounds, User, bcrypt) => {
 logUserIn = async (req, res, User, jwt, bcrypt, randomSecret) => {
     const { email, password } = req.body;
     try {
-        const user = await checkUser(email, User);
+        const user = await getUser(email, User);
         await comparePassword(password, user.password, bcrypt);
         const randomToken = generateToken(jwt, user._id, randomSecret);
         res.status(200).json({userId: user._id, token: randomToken});
