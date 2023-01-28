@@ -33,5 +33,5 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 Do `cd backend`  
 Run `nodemon serve` to launch the server and the db  
 If everything is ok you will see in your console:  
-`connected to mongoose`
+`connected to mongoose`  
 `Listening on port 3000`  
