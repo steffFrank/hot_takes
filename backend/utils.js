@@ -129,11 +129,6 @@ const updateLikes = async (sauce, userId, like) => {
     let message = "vote registered with success";
     let value;
 
-    // const sauce = await Sauce.findById(id);
-    // if (!sauce) {
-    //     res.status(404).json({message: "Sauce not found"});
-    // }
-
     switch (like) {
         case 1:
             field = "usersLiked",
