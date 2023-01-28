@@ -59,7 +59,7 @@ const comparePassword = async (password, hash, bcrypt) => {
     try {
         return await bcrypt.compare(password, hash);
     }catch(error) {
-        console.log(error);
+        console.error(error);
         res.status(404).json(error);
     }
     return false;
@@ -123,12 +123,17 @@ const normalizePort = val => {
  * @param {Number} like 
  * @returns 
  */
-const updateLikes = async (Sauce, id, userId, like) => {
-    const sauce = await Sauce.findById(id);
+const updateLikes = async (sauce, userId, like) => {
     let field;
     let action;
     let message = "vote registered with success";
     let value;
+
+    // const sauce = await Sauce.findById(id);
+    // if (!sauce) {
+    //     res.status(404).json({message: "Sauce not found"});
+    // }
+
     switch (like) {
         case 1:
             field = "usersLiked",
@@ -151,8 +156,8 @@ const updateLikes = async (Sauce, id, userId, like) => {
         default: 
             throw new Error("Wrong like value, expected 1, 0 or -1");
     }
-    await Sauce.updateOne(
-        {"_id": id},
+    
+    await sauce.updateOne(
         {
             [action]: {[field]: userId},
             $inc: {[value]: like}
