@@ -1,10 +1,15 @@
 // User controller
-const {getHashedPassword, saveUserInDb, getUser, comparePassword, generateToken} = require("../utils");
-
+const {getHashedPassword, saveUserInDb, getUser, comparePassword, generateToken, validateUser} = require("../utils");
+const 
 // Register User
 registerUser = async (req, res, saltRounds, User, bcrypt) => {
-    const { email, password } = req.body;
     try {
+        const {error, value} = validateUser(req.body.email, req.body.password);
+        if (error) {
+            return res.status(401).json({message: error.message})
+        }
+        console.log(error);
+        const {email, password} = value;
         const hashedPassword = await getHashedPassword(password, saltRounds, bcrypt);
         await saveUserInDb(email, hashedPassword, User);
         res.status(201).json({message: "User registered with success"});

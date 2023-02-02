@@ -1,5 +1,19 @@
 // Utility functions 
 const fs = require("fs").promises;
+// Function to vilidate the user inputs
+
+const validateUser = (email, password) => {
+    const emailRegex = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]{2,}$/;
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])(?=.{10,})/;
+   
+    if (!emailRegex.test(email)) {
+        return {error: "Invalid email format."}
+    }
+    if (!passwordRegex.test(password)) {
+        return {error: "Invalid password format."}
+    }
+    return {value: {email, password}};
+}
 
 /**
  * Save a new created user in the database
@@ -181,7 +195,8 @@ module.exports = ({
     normalizePort,
     removeImageFromPath,
     saveUserInDb,
-    updateLikes
+    updateLikes,
+    validateUser
 });
 
 
