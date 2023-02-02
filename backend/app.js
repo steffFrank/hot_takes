@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const mongoose = require("mongoose");
-mongoose.set("strictQuery", false);
+mongoose.set("strictQuery", true);
 require("dotenv").config();
 const path = require("path");
 
@@ -17,7 +17,11 @@ app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Connect to the database mongoDb
 try {
-    mongoose.connect(process.env.MONGODB_CONNECTION);
+    mongoose.connect(process.env.MONGODB_CONNECTION,
+        {
+            useNewUrlParser: true,
+            useUnifiedTopology: true
+        });
     console.log("connected to mongoose");
 } catch(error) {
     console.error(error);

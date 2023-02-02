@@ -23,7 +23,7 @@ logUserIn = async (req, res, User, jwt, bcrypt, randomSecret) => {
         res.status(200).json({userId: user._id, token: randomToken});
     } catch(error) {
         console.error(error);
-        res.status(500).json({error});
+        res.status(401).json({error});
     }
 }
 

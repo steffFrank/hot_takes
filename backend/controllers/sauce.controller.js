@@ -42,7 +42,7 @@ const getAllSauces = async (req, res) => {
     }catch(error) {
 
         // Send an error response
-        res.status(400).json({ error });
+        res.status(404).json({ error });
     }
 };
 
@@ -105,7 +105,7 @@ const deleteSauce = async (req, res) => {
 
         const sauce = await Sauce.findById(id);
         if (!sauce) {
-            res.status(404).json({message: "Sauce not found"});
+            return res.status(404).json({message: "Sauce not found"});
         }
 
         if (sauce.userId !== req.auth.userId) {
